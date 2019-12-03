@@ -1,4 +1,4 @@
-JSONC
+JSON-Compress
 =====
 # Update to version 1.7.0
 
@@ -6,15 +6,13 @@ JSONC
 
 ## Background
 
-One of the problems you can have developing rich internet applications (RIA) using Javascript is the amount of data being transported to
-and from the server.
-When data comes from server, this data could be GZipped, but this is not possible when the big amount of data comes from
-the browser to the server.
+One of the problems you can have developing rich internet applications (RIA) using Javascript is the amount of data being transported to and from the server.
+When data comes from server, this data could be GZipped, but this is not possible when the big amount of data comes from the browser to the server.
 
-##### JSONC is born to change the way browser vendors think and become an standard when send information to the server efficiently. 
+##### JSON-Compress was born to change the way browser vendors think and become an standard when send information to the server efficiently.
 
 
-JSONC has two differents approaches to reduce the size of the amount of data to be transported:
+JSON-Compress has two differents approaches to reduce the size of the amount of data to be transported:
 
 * *JSONC.compress* - Compress JSON objects using a map to reduce the size of the keys in JSON objects.
     * Be careful with this method because it's really impressive if you use it with a JSON with a big amount of data, but it
@@ -41,7 +39,7 @@ See Usage for more details.
 ### Load for use in script:
 
     // Returns the JSONC object with the following methods
-    var JSONC = require('json-compress');
+    var JSONC = require( 'json-compress' );
 
 ### Compress a JSON object:
 
@@ -58,45 +56,29 @@ See Usage for more details.
     // Returns the LZW representation as string of the JSON object.
     var lzwString = JSONC.pack( json );
 
-### Compress a JSON object as a Gzipped string after compress it using JSONC:
-
-    // Returns the LZW representation as string of the JSON object.
-    var lzwString = JSONC.pack( json, true );
-
 ### Decompress a normal JSON object from a Gzipped string:
 
     // Returns the original JSON object.
     var json = JSONC.unpack( gzippedString );
 
-### Decompress a JSON compressed object using JSONC from a Gzipped string:
+### Compress a JSON object with JSONC before compressing as a Gzipped string:
+
+    // Returns the LZW representation as string of the JSON object.
+    var lzwString = JSONC.pack( json, true );
+
+### Decompress a JSON object that was compressed with JSONC from a Gzipped string:
 
     // Returns the original JSON object.
     var json = JSONC.unpack( gzippedString, true );
 
-## Examples of compression
+# Modify global JSON
 
-#### Example data.js.
+### You should probably _NOT_ do this, but it makes it more convenient to use
 
-    Original - 17331 bytes
-    Compressed using JSONC - 16025 bytes
-    Compression rate - 7.5%
-
-
-    Original compressed using gzip.js - 5715 bytes
-    Compressed using JSONC using gzip.js - 5761 bytes
-
-
-    Compression rate from original to compressed using JSONC and gzip.js - 66.76%
-
-#### Example data2.js.
-
-    Original - 19031 bytes
-    Compressed using JSONC - 12787 bytes
-    Compression rate - 32.81%
-
-
-    Original compressed using gzip.js - 4279 bytes
-    Compressed using JSONC using gzip.js - 4664 bytes
-
-
-    Compression rate from original to compressed using JSONC and gzip.js - 75.49%
+    // Inject JSONC functions into global JSON object
+    require( 'json-compress' ).inject( JSON );
+    // Use JSONC functions directly from JSON object
+    var compressedJSON = JSON.compress( json );
+    var json = JSON.decompress( compressedJSON );
+    var lzwString = JSON.pack( json );
+    var json = JSON.unpack( lzwString );

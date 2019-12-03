@@ -337,4 +337,17 @@ JSONC.unpack = function (gzipped, wasCompressedFirst) {
   return wasCompressedFirst ? JSONC.decompress(json) : json;
 };
 
+/**
+ * Injects JSONC's functions into global JSON object
+ * @param JSON
+ * @returns JSON
+ */
+JSONC.inject = function (JSON) {
+  JSON.compress = this.compress;
+  JSON.decompress = this.decompress;
+  JSON.pack = this.pack;
+  JSON.unpack = this.unpack;
+  return JSON;
+}
+
 module.exports = JSONC;
