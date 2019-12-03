@@ -1,12 +1,4 @@
-void function(global, callback) {
-	if (typeof module === 'object') {
-		module.exports = callback();
-	} else if (typeof define === 'function') {
-		define(callback);
-	} else {
-		global.crc32 = callback();
-	}
-}(this, function() {
+module.exports = function() {
 	'use strict';
 
 	var table = [],
@@ -108,4 +100,4 @@ void function(global, callback) {
 	exports.table = crcTable;
 
 	return exports;
-});
+}

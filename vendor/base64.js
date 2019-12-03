@@ -139,3 +139,5 @@ var Base64 = {
   }
 
 }
+
+module.exports = Base64;
