@@ -1,5 +1,4 @@
-.idea/*
-.coverage/*
-node_modules
-.cache
-dist
+.idea/
+node_modules/
+.cache/
+dist/
