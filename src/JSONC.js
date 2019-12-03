@@ -253,11 +253,11 @@ JSONC.compress = function (json, optKeys) {
 /**
  * Use LZString to get the compressed string.
  * @param json
- * @param bCompress
+ * @param compressFirst
  * @returns {String}
  */
-JSONC.pack = function (json, bCompress) {
-  var str = JSON.stringify((bCompress ? JSONC.compress(json) : json));
+JSONC.pack = function (json, compressFirst) {
+  var str = JSON.stringify((compressFirst ? JSONC.compress(json) : json));
   var zipped = gzip.zip(str, { level: 9 });
   var data;
   try {
@@ -309,10 +309,10 @@ function getArr(str) {
 /**
  * Returns the JSON object from the LZW string
  * @param gzipped
- * @param bDecompress
+ * @param wasCompressedFirst
  * @returns {Object}
  */
-JSONC.unpack = function (gzipped, bDecompress) {
+JSONC.unpack = function (gzipped, wasCompressedFirst) {
   var aArr = getArr(Base64.decode(gzipped));
   var str, unzipped = gzip.unzip(aArr, { level: 9 });
   try {
@@ -334,7 +334,7 @@ JSONC.unpack = function (gzipped, bDecompress) {
     }
   }
   var json = JSON.parse(str);
-  return bDecompress ? JSONC.decompress(json) : json;
+  return wasCompressedFirst ? JSONC.decompress(json) : json;
 };
 
 module.exports = JSONC;
