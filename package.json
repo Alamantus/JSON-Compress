@@ -25,6 +25,7 @@
     "url": "https://github.com/Alamantus/JSON-Compress.git"
   },
   "scripts": {
+    "test": "node src/test.js",
     "build": "parcel build src/JSONC.js"
   },
   "github": "https://github.com/Alamantus/JSON-Compress",
