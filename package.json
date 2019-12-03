@@ -1,9 +1,11 @@
 {
-  "name": "jsoncomp",
-  "version": "1.6.1",
+  "name": "json-compress",
+  "version": "1.7.0",
   "description": "Compress your JSON to send and get a lot of data to/from server",
-  "homepage": "http://tcorral.github.com/JSONC/",
-  "author": "Tomas Corral",
+  "authors": [
+    "Tomas Corral",
+    "Robbie Antenesse"
+  ],
   "main": "./src/JSONC.js",
   "keywords": [
     "JSON",
@@ -16,36 +18,17 @@
     }
   ],
   "bugs": {
-    "mail": "amischol@gmail.com",
-    "url": "https://github.com/tcorral/JSONC/issues"
+    "url": "https://github.com/Alamantus/JSON-Compress/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tcorral/JSONC.git"
+    "url": "https://github.com/Alamantus/JSON-Compress.git"
   },
   "scripts": {
-    "test": "karma start --single-run --browsers PhantomJS"
+    "build": "parcel build src/JSONC.js"
   },
+  "github": "https://github.com/Alamantus/JSON-Compress",
   "devDependencies": {
-    "grunt": "1.0.1",
-    "grunt-contrib-compress": "1.4.1",
-    "grunt-contrib-concat": "1.0.1",
-    "grunt-contrib-copy": "1.0.0",
-    "grunt-contrib-jshint": "1.1.0",
-    "grunt-contrib-uglify": "2.2.1",
-    "grunt-karma": "2.0.0",
-    "jasmine-core": "^2.5.2",
-    "karma": "1.5.0",
-    "karma-chrome-launcher": "2.0.0",
-    "karma-coffee-preprocessor": "1.0.1",
-    "karma-coverage": "1.1.1",
-    "karma-firefox-launcher": "1.0.1",
-    "karma-html2js-preprocessor": "1.1.0",
-    "karma-jasmine": "1.1.0",
-    "karma-junit-reporter": "1.2.0",
-    "karma-phantomjs-launcher": "1.0.4",
-    "karma-requirejs": "1.1.0",
-    "karma-script-launcher": "1.0.0"
-  },
-  "github": "https://github.com/tcorral/JSONC"
+    "parcel-bundler": "^1.12.4"
+  }
 }

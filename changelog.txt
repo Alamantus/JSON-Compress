@@ -1,3 +1,5 @@
+1.7.0
+    Make JSONC modular for use with require() and modern JS development
 1.6.1
     Make improvement in _numberToKeys for objects with a lot of different keys.
 1.6.0
