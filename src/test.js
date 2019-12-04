@@ -1,7 +1,9 @@
 require('./JSONC').inject(JSON);
 
 var data = {
-  random: 'data',
+  nice: '!',
+  A: 'good',
+  random: 'data set',
   for: [
     'testing',
     'and',
@@ -19,7 +21,7 @@ var data = {
 };
 
 console.log('\nJSONC.compress()');
-var compressedData = JSON.compress(data);
+var compressedData = JSON.compress(data, true);
 console.log(compressedData);
 
 console.log('\nJSONC.decompress()');

@@ -132,7 +132,7 @@ function _getKeys(json, aKeys) {
 
   for (sKey in json) {
 
-    if (json.hasOwnProperty(sKey)) {
+    if (typeof json[sKey] !== 'undefined') {
       oItem = json[sKey];
       if (_isObject(oItem) || _isArray(oItem)) {
         aKeys = aKeys.concat(unique(_getKeys(oItem, aKeys)));
@@ -140,11 +140,37 @@ function _getKeys(json, aKeys) {
       if (isNaN(Number(sKey))) {
         if (!contains(aKeys, sKey)) {
           _nCode += 1;
-          aKey = [];
-          aKey.push(_getSpecialKey(_numberToKey(_nCode)), sKey);
+          aKey = [_getSpecialKey(_numberToKey(_nCode)), sKey];
           aKeys.push(aKey);
         }
       }
+    }
+  }
+  return aKeys;
+}
+
+/**
+ * Method to prevent key values from being overridden if matched by compressed key
+ * @private
+ * @param aKeys
+ */
+function _correctCollision(aKeys) {
+  var nIndex,
+    nLen = aKeys.length,
+    cKeys = {};
+  for (nIndex = 0; nIndex < nLen; nIndex++) {
+    var aKey = aKeys[nIndex][0];
+    cKeys[aKey] = nIndex;
+  }
+  for (nIndex = 0; nIndex < nLen; nIndex++) {
+    var aVal = aKeys[nIndex][1];
+    if (typeof cKeys[aVal] !== 'undefined') {
+      var cIndex = cKeys[aVal];
+      _nCode += 1;
+      aKeys[cIndex][0] = _getSpecialKey(_numberToKey(_nCode));
+      cKeys[cIndex] = aKeys[cIndex][0];
+      delete cKeys[aVal];
+      return _correctCollision(aKeys);
     }
   }
   return aKeys;
@@ -155,13 +181,14 @@ function _getKeys(json, aKeys) {
  * @private
  * @param json
  * @param aKeys
+ * @param checkForCollision
  */
-function _compressArray(json, aKeys) {
+function _compressArray(json, aKeys, checkForCollision) {
   var nIndex,
     nLenKeys;
 
   for (nIndex = 0, nLenKeys = json.length; nIndex < nLenKeys; nIndex++) {
-    json[nIndex] = JSONC.compress(json[nIndex], aKeys);
+    json[nIndex] = JSONC.compress(json[nIndex], aKeys, checkForCollision);
   }
 }
 
@@ -170,18 +197,20 @@ function _compressArray(json, aKeys) {
  * @private
  * @param json
  * @param aKeys
+ * @param checkForCollision
  * @returns {*}
  */
-function _compressOther(json, aKeys) {
-  var oKeys,
-    aKey,
+function _compressOther(json, aKeys, checkForCollision) {
+  var aKey,
     str,
     nLenKeys,
     nIndex,
     obj;
   aKeys = _getKeys(json, aKeys);
   aKeys = unique(aKeys);
-  oKeys = _biDimensionalArrayToObject(aKeys);
+  if (checkForCollision === true) {
+    aKeys = _correctCollision(aKeys);
+  }
 
   str = JSON.stringify(json);
   nLenKeys = aKeys.length;
@@ -191,7 +220,7 @@ function _compressOther(json, aKeys) {
     str = str.replace(new RegExp('(?:"' + escapeRegExp(aKey[1]) + '"):', 'g'), '"' + aKey[0] + '":');
   }
   obj = JSON.parse(str);
-  obj._ = oKeys;
+  obj._ = _biDimensionalArrayToObject(aKeys);
   return obj;
 }
 
@@ -221,7 +250,7 @@ function _decompressOther(jsonCopy) {
   delete jsonCopy._;
   str = JSON.stringify(jsonCopy);
   for (sKey in oKeys) {
-    if (oKeys.hasOwnProperty(sKey)) {
+    if (typeof oKeys[sKey] !== 'undefined') {
       str = str.replace(new RegExp('(?:"' + sKey + '"):', 'g'), '"' + oKeys[sKey] + '":');
     }
   }
@@ -232,21 +261,28 @@ function _decompressOther(jsonCopy) {
  * Compress a RAW JSON
  * @param json
  * @param optKeys
+ * @param checkForCollision
  * @returns {*}
  */
-JSONC.compress = function (json, optKeys) {
-  if (!optKeys) {
+JSONC.compress = function (json, optKeys, checkForCollision) {
+  if (typeof optKeys === 'boolean') {
+    checkForCollision = optKeys;
+    optKeys = undefined;
+  } else {
+    checkForCollision = typeof checkForCollision !== 'undefined' ? checkForCollision : false;
+  }
+  if (typeof optKeys === 'undefined') {
     _nCode = -1;
   }
   var aKeys = optKeys || [],
     obj;
 
   if (_isArray(json)) {
-    _compressArray(json, aKeys);
+    _compressArray(json, aKeys, checkForCollision);
     obj = json;
   }
   else {
-    obj = _compressOther(json, aKeys);
+    obj = _compressOther(json, aKeys, checkForCollision);
   }
   return obj;
 };
@@ -254,10 +290,11 @@ JSONC.compress = function (json, optKeys) {
  * Use LZString to get the compressed string.
  * @param json
  * @param compressFirst
+ * @param checkForCollision
  * @returns {String}
  */
-JSONC.pack = function (json, compressFirst) {
-  var str = JSON.stringify((compressFirst ? JSONC.compress(json) : json));
+JSONC.pack = function (json, compressFirst, checkForCollision) {
+  var str = JSON.stringify((compressFirst ? JSONC.compress(json, checkForCollision) : json));
   var zipped = gzip.zip(str, { level: 9 });
   var data;
   try {
