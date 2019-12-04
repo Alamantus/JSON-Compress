@@ -38,7 +38,7 @@ See Usage for more details.
 
 ### Load for use in script:
 
-    // Returns the JSONC object with the following methods
+    // Returns the JSONC object with the following methods.
     var JSONC = require( 'json-compress' );
 
 ### Compress a JSON object:
@@ -71,7 +71,25 @@ See Usage for more details.
     // Returns the original JSON object.
     var json = JSONC.unpack( gzippedString, true );
 
-# Modify global JSON
+## Prevent Key Collisions
+
+If compressing a JSON object that contains keys that are single characters, there may be a collision with those keys and the generated map keys of the compressed JSON object. The safest way to prevent this is to not use single-character keys, but when you need these short keys, you can use the collision prevention flag.
+
+Using key/map collision prevention will slow down the compression of JSON objects, and it may slow it down _significantly_ if the object is particularly lage. Be aware of this before using the options below.
+
+### Compress a JSON object, checking for object key collisions:
+
+    // Returns a JSON object but compressed, ensuring that any
+    // single-character keys have no collision with the map.
+    var compressedJSON = JSONC.compress( json, true );
+
+### Compress a JSON object with JSONC before compressing as a Gzipped string, checking for object key collisions:
+
+    // Returns the LZW representation as string of the JSON object, ensuring
+    // that any single-character keys have no collision with the map.
+    var lzwString = JSONC.pack( json, true, true );
+
+## Modify global JSON
 
 ### You should probably _NOT_ do this, but it makes it more convenient to use
 
